@@ -1,16 +1,192 @@
+
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width">
-  <title>replit</title>
-  <link href="style.css" rel="stylesheet" type="text/css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PWR Chain Quality Content Checker</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      /* Gradient background: black, purple, and gold */
+      background: linear-gradient(135deg, #000000, #800080, #FFD700);
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin-top: 40px;
+    }
+    .card {
+      border: none;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      padding: 20px;
+      background-color: #fff;
+    }
+    .logo {
+      max-width: 100px;
+      margin: 0 auto 20px;
+      display: block;
+    }
+    h1 {
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+    textarea {
+      resize: vertical;
+    }
+    button {
+      margin-top: 10px;
+    }
+    .message {
+      margin-top: 20px;
+      font-size: 18px;
+      text-align: center;
+    }
+    ul {
+      text-align: left;
+    }
+  </style>
 </head>
-
 <body>
-  Hello world
-  <script src="script.js"></script>
-</body>
+  <div class="container">
+    <div class="card">
+      <!-- Updated Logo -->
+      <img src="https://i.imgur.com/xyE2PvQ.png" alt="Logo" class="logo">
+      <h1 class="text-center">PWR Chain Quality Content Checker</h1>
+      <textarea id="contentInput" class="form-control" rows="5" placeholder="Enter your content here..."></textarea>
+      <button id="checkBtn" class="btn btn-primary w-100 mt-3" onclick="checkContent()">Check Content</button>
+      <div id="message" class="message"></div>
+      <button id="resetBtn" class="btn btn-success w-100 mt-3" onclick="resetPage()" style="display: none;">Try Again</button>
+    </div>
+  </div>
 
+  <script>
+    function checkContent() {
+      const contentInput = document.getElementById('contentInput');
+      const checkBtn = document.getElementById('checkBtn');
+      const messageDiv = document.getElementById('message');
+      const resetBtn = document.getElementById('resetBtn');
+      let content = contentInput.value.trim();
+
+      // Check if the content is too short.
+      if (content.length < 70) {
+        messageDiv.textContent = "Too basic, your content needs to be a little bit longer";
+        contentInput.style.display = "none";
+        checkBtn.style.display = "none";
+        resetBtn.style.display = "block";
+        return;
+      }
+
+      // Check for inappropriate language.
+      let badWords = ["fuck", "shit", "damn", "bitch", "asshole", "crap", "bastard"];
+      let lowerContent = content.toLowerCase();
+      for (let word of badWords) {
+        if (lowerContent.includes(word)) {
+          messageDiv.textContent = "🚫 Your content has inappropriate language. Please revise.";
+          contentInput.style.display = "none";
+          checkBtn.style.display = "none";
+          resetBtn.style.display = "block";
+          return;
+        }
+      }
+
+      // --- Heuristic / AI-like Checks ---
+      // 1. Keyword density check for "pwr"
+      let pwrOccurrences = (lowerContent.match(/pwr/g) || []).length;
+      let totalWords = lowerContent.split(/\s+/).length;
+      let density = pwrOccurrences / totalWords;
+      const densityThreshold = 0.1; // 10%
+
+      // 2. Check for supporting keywords to ensure context.
+      const supportingKeywords = [
+        "immutable", "vidas", "consensus", "quantum", "scalability", "ledger", 
+        "interoperability", "evm", "smart contract", "auditability", "transparency", 
+        "staking", "validator", "inflation", "deflation", "transaction fee", 
+        "future-proof", "blockchain", "web3", "decentralized"
+      ];
+      let hasSupportingKeyword = supportingKeywords.some(keyword => lowerContent.includes(keyword));
+
+      // 3. If there's no mention of "pwr", if "pwr" is spammed, or it lacks supportive context,
+      // flag as low quality.
+      if (pwrOccurrences === 0 || density > densityThreshold || !hasSupportingKeyword) {
+        displaySuggestions();
+        return;
+      }
+
+      // If all checks pass, mark as good quality.
+      messageDiv.textContent = "Your content is of good quality!";
+      contentInput.style.display = "none";
+      checkBtn.style.display = "none";
+      resetBtn.style.display = "block";
+    }
+
+    function displaySuggestions() {
+      const messageDiv = document.getElementById('message');
+      const contentInput = document.getElementById('contentInput');
+      const checkBtn = document.getElementById('checkBtn');
+      const resetBtn = document.getElementById('resetBtn');
+
+      // List of detailed subject ideas.
+      let suggestionSubjects = [
+        "PWR Chain's Verifiable Immutable Data Applications (VIDAs) – How they work, benefits, and use cases.",
+        "PWR Chain's Consensus Mechanism – Post-quantum security, Tendermint enhancements, and equal chance validation.",
+        "How PWR Chain Separates Consensus from Execution – Achieving scalability by offloading computation.",
+        "PWR Chain's Quantum-Resistant Security – Leveraging Falcon signatures for future-proof cryptography.",
+        "PWR Chain's Horizontal Scalability – Enabling unlimited parallel processing with VIDAs.",
+        "PWR Chain as an Immutable Ledger – The foundation for decentralized data integrity.",
+        "PWR Chain's Conduit Nodes – Powering cross-VIDA communication and trustless interoperability.",
+        "PWR Chain's Cross-Chain Interoperability – Seamless integration with external protocols using Conduit Nodes.",
+        "PWR Chain's EVM Compatibility – Running Ethereum Virtual Machines (EVMs) with native fee conversions.",
+        "How PWR Chain Eliminates Smart Contract Bottlenecks – The next evolution in decentralized application execution.",
+        "Why PWR Chain is a Low-Cost Blockchain Infrastructure – Enabling high-performance dApps without expensive nodes.",
+        "PWR Chain's Enterprise-Grade Features – API integrations with ERP, CRM, and legacy systems.",
+        "How PWR Chain Ensures Auditability & Transparency – Immutable transaction records for enterprises.",
+        "PWR Chain's Zero Gas Fee Model for VIDAs – Cost-efficient execution for developers and businesses.",
+        "Why PWR Chain Supports Web2 Developer Tools – Building VIDAs using Python, Java, SQL, and more.",
+        "How PWR Chain Ensures VIDA Security & Replayability – Verifiable logic without central control.",
+        "Real-World Use Cases of PWR Chain – Applications in supply chain, finance, IoT, and beyond.",
+        "PWR Chain's Token Utility ($PWR) – Staking, governance, transaction fees, and conduit node incentives.",
+        "PWR Chain's Transaction Fee Model – A cost-efficient approach to decentralized computing.",
+        "PWR Chain's Staking & Validator Rewards – How validators earn rewards and strengthen decentralization.",
+        "PWR Chain's Inflation & Deflation Mechanics – Balancing token supply with a sustainable fee-burning system.",
+        "Why PWR Chain is Future-Proof – Quantum resistance, scalability, and next-gen innovations.",
+        "How PWR Chain Outperforms Traditional Blockchains – Redefining decentralization and efficiency.",
+        "PWR Chain's Approach to Decentralization & Security – Eliminating single points of control.",
+        "The Role of PWR Chain in Web3 – Decentralized applications beyond smart contracts.",
+        "How PWR Chain is Disrupting Industries – Transforming finance, gaming, logistics, and more.",
+        "The Future of Decentralized Computing with PWR Chain – Why off-chain execution is the next big thing."
+      ];
+
+      // Shuffle the suggestions array.
+      for (let i = suggestionSubjects.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1));
+        [suggestionSubjects[i], suggestionSubjects[j]] = [suggestionSubjects[j], suggestionSubjects[i]];
+      }
+
+      // Pick 5 random suggestions.
+      let selected = suggestionSubjects.slice(0, 5);
+      let suggestionHTML = "<p>Your content doesn't promote PWR Chain in a meaningful way. Please try again with more quality content. Consider writing about one of the following subjects:</p><ul>";
+      selected.forEach(item => {
+        suggestionHTML += `<li>${item}</li>`;
+      });
+      suggestionHTML += "</ul>";
+      messageDiv.innerHTML = suggestionHTML;
+      contentInput.style.display = "none";
+      checkBtn.style.display = "none";
+      resetBtn.style.display = "block";
+    }
+
+    function resetPage() {
+      location.reload();
+    }
+  </script>
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>
